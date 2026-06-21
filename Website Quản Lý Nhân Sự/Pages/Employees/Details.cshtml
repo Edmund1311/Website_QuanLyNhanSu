@@ -1,0 +1,12 @@
+@page "{id:int}"
+@model Website_Quản_Lý_Nhân_Sự.Pages.Employees.DetailsModel
+@{ ViewData["Title"] = "Chi tiết nhân viên"; var e = Model.Employee!; }
+<div class="page-header d-flex justify-content-between"><h1 class="h3">@e.FullName</h1><a asp-page-handler="ExportPdf" asp-route-id="@e.Id" class="btn btn-outline-danger">Xuất PDF</a></div>
+<div class="card form-card"><div class="card-body p-4"><div class="row g-3">
+<div class="col-md-3 text-center"><img src="@AvatarHelper.GetUrl(e.AvatarPath)" class="employee-avatar-lg" alt="@e.FullName" /></div>
+<div class="col-md-9"><div class="row g-2">
+<div class="col-md-6"><strong>Mã NV:</strong> @e.EmployeeCode</div><div class="col-md-6"><strong>Email:</strong> @e.Email</div>
+<div class="col-md-6"><strong>Phòng ban:</strong> @e.Department?.Name</div><div class="col-md-6"><strong>Chức vụ:</strong> @e.Position?.Name</div>
+<div class="col-md-6"><strong>Ngày vào làm:</strong> @e.HireDate.ToString("dd/MM/yyyy")</div><div class="col-md-6"><strong>Trạng thái:</strong> @DisplayHelper.WorkStatus(e.WorkStatus)</div>
+<div class="col-md-6"><strong>Điện thoại:</strong> @(e.Phone ?? "—")</div><div class="col-md-6"><strong>Giới tính:</strong> @DisplayHelper.Gender(e.Gender)</div>
+</div></div></div></div></div>

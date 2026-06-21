@@ -1,0 +1,10 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Attendance.CreateModel
+@{ ViewData["Title"] = "Thêm chấm công"; }
+<div class="card form-card"><div class="card-body p-4"><form method="post">
+<div class="mb-3"><label class="form-label">Nhân viên</label><select asp-for="Attendance.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))"></select></div>
+<div class="mb-3"><label class="form-label">Ngày</label><input asp-for="Attendance.WorkDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Giờ vào</label><input asp-for="CheckInTime" class="form-control" type="time" /></div>
+<div class="mb-3"><label class="form-label">Giờ ra</label><input asp-for="CheckOutTime" class="form-control" type="time" /></div>
+<div class="mb-3"><label class="form-label">Trạng thái</label><select asp-for="Attendance.Status" class="form-select" asp-items="Html.GetEnumSelectList<AttendanceStatus>()"></select></div>
+<button class="btn btn-primary">Lưu</button></form></div></div>

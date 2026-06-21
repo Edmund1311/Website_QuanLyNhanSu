@@ -1,0 +1,53 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+    ViewData["UseAuthLayout"] = true;
+    Layout = "_Layout";
+}
+
+<section class="landing-hero d-flex align-items-center">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-light text-dark mb-3">HRMS SaaS cho doanh nghiệp</span>
+                <h1 class="display-5 fw-bold mb-3">Quản lý nhân sự chuyên nghiệp, dễ triển khai</h1>
+                <p class="lead mb-4">
+                    Hệ thống hỗ trợ đa công ty, phân quyền theo vai trò, chấm công, nghỉ phép,
+                    hợp đồng, bảng lương và xuất báo cáo Excel/PDF.
+                </p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-page="/Account/Login" class="btn btn-light btn-lg">Đăng nhập</a>
+                    <a asp-page="/Account/Register" class="btn btn-outline-light btn-lg">Đăng ký</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card auth-card text-dark">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-3">Kiểm tra mã công ty</h3>
+                        <p class="text-muted">Nhập mã công ty do quản trị viên cung cấp để tham gia hệ thống.</p>
+                        <form method="post" asp-page-handler="CheckCompany">
+                            <div class="input-group mb-3">
+                                <input asp-for="CompanyCode" class="form-control form-control-lg" placeholder="VD: DEMO01" />
+                                <button class="btn btn-primary" type="submit">Kiểm tra</button>
+                            </div>
+                        </form>
+                        @if (!string.IsNullOrEmpty(Model.CompanyCode))
+                        {
+                            if (Model.CompanyFound)
+                            {
+                                <div class="alert alert-success mb-0">
+                                    Mã hợp lệ: <strong>@Model.CompanyName</strong>. Hãy đăng ký/đăng nhập và gửi yêu cầu tham gia.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-danger mb-0">Không tìm thấy công ty với mã này.</div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,41 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký";
+    ViewData["UseAuthLayout"] = true;
+    Layout = "_Layout";
+}
+
+<div class="auth-body d-flex align-items-center justify-content-center p-3">
+    <div class="card auth-card w-100" style="max-width:460px">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Tạo tài khoản</h2>
+                <p class="text-muted mb-0">Sau khi đăng ký, bạn có thể nhập mã công ty để tham gia</p>
+            </div>
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3">
+                    <label class="form-label">Họ tên</label>
+                    <input asp-for="Input.FullName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu</label>
+                    <input asp-for="Input.Password" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Xác nhận mật khẩu</label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+            </form>
+            <div class="text-center mt-3">
+                <a asp-page="/Account/Login">Đã có tài khoản? Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</div>

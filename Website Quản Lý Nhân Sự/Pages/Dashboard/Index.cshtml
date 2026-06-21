@@ -1,0 +1,132 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Dashboard.IndexModel
+@{
+    if (Model.IsEmployeeView)
+    {
+        ViewData["Title"] = "Trang chủ nhân viên";
+        var emp = Model.EmployeeDashboard!.Employee;
+        var dash = Model.EmployeeDashboard;
+        <div class="page-header mb-4">
+            <h1 class="h3 mb-1">Xin chào, @emp.FullName</h1>
+            <p class="text-muted mb-0">@dash.CompanyName</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card form-card text-center p-4">
+                    <img src="@AvatarHelper.GetUrl(emp.AvatarPath)" alt="@emp.FullName" class="employee-avatar-lg mx-auto mb-3" />
+                    <h2 class="h5 mb-1">@emp.FullName</h2>
+                    <p class="text-muted mb-2">@emp.EmployeeCode</p>
+                    <span class="badge bg-primary">@DisplayHelper.WorkStatus(emp.WorkStatus)</span>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="card stat-card h-100">
+                            <div class="card-body">
+                                <div class="text-muted small">Ngày công tháng @DateTime.UtcNow.Month/@DateTime.UtcNow.Year</div>
+                                <div class="h3 mb-0">@dash.WorkDaysThisMonth <span class="fs-6 text-muted">/ @dash.StandardWorkDays ngày</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card stat-card h-100">
+                            <div class="card-body">
+                                <div class="text-muted small">@(dash.HasOfficialSalary ? "Lương tháng này" : "Lương dự tính")</div>
+                                <div class="h3 mb-0 text-success">@DisplayHelper.FormatMoney(dash.EstimatedSalary)</div>
+                                @if (!dash.HasOfficialSalary)
+                                {
+                                    <div class="small text-muted">Dựa trên @dash.WorkDaysThisMonth ngày công / lương cơ bản @DisplayHelper.FormatMoney(dash.BaseSalary)</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card form-card">
+                    <div class="card-header bg-white"><strong>Thông tin cá nhân</strong></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6"><strong>Email:</strong> @emp.Email</div>
+                            <div class="col-md-6"><strong>Điện thoại:</strong> @(emp.Phone ?? "—")</div>
+                            <div class="col-md-6"><strong>Phòng ban:</strong> @emp.Department?.Name</div>
+                            <div class="col-md-6"><strong>Chức vụ:</strong> @emp.Position?.Name</div>
+                            <div class="col-md-6"><strong>Ngày sinh:</strong> @(emp.DateOfBirth?.ToString("dd/MM/yyyy") ?? "—")</div>
+                            <div class="col-md-6"><strong>Giới tính:</strong> @DisplayHelper.Gender(emp.Gender)</div>
+                            <div class="col-md-6"><strong>Ngày vào làm:</strong> @emp.HireDate.ToString("dd/MM/yyyy")</div>
+                            <div class="col-md-6"><strong>Địa chỉ:</strong> @(emp.Address ?? "—")</div>
+                        </div>
+                        <div class="mt-3">
+                            <a asp-page="/Employees/Profile" class="btn btn-outline-primary btn-sm">Cập nhật ảnh đại diện</a>
+                            <a asp-page="/LeaveRequests/Index" class="btn btn-outline-secondary btn-sm">Xem đơn nghỉ phép</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        ViewData["Title"] = "Bảng điều khiển";
+        var maxDept = Model.Dashboard.EmployeesByDepartment.DefaultIfEmpty(new("", 0)).Max(x => x.Value);
+        if (maxDept == 0) maxDept = 1;
+
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1">Bảng điều khiển</h1>
+                <p class="text-muted mb-0">Tổng quan hệ thống quản lý nhân sự</p>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Nhân viên</div><div class="h3 mb-0">@Model.Dashboard.TotalEmployees</div></div></div></div>
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Phòng ban</div><div class="h3 mb-0">@Model.Dashboard.TotalDepartments</div></div></div></div>
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Chức vụ</div><div class="h3 mb-0">@Model.Dashboard.TotalPositions</div></div></div></div>
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Hợp đồng</div><div class="h3 mb-0">@Model.Dashboard.TotalContracts</div></div></div></div>
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Sắp hết hạn</div><div class="h3 mb-0 text-warning">@Model.Dashboard.ExpiringContracts</div></div></div></div>
+            <div class="col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Hết hạn</div><div class="h3 mb-0 text-danger">@Model.Dashboard.ExpiredContracts</div></div></div></div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card table-card">
+                    <div class="card-header bg-white"><strong>Nhân viên theo phòng ban</strong></div>
+                    <div class="card-body">
+                        @foreach (var item in Model.Dashboard.EmployeesByDepartment)
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>@item.Label</span>
+                                    <span>@item.Value</span>
+                                </div>
+                                <div class="chart-bar"><span style="width:@(item.Value * 100 / maxDept)%"></span></div>
+                            </div>
+                        }
+                        @if (!Model.Dashboard.EmployeesByDepartment.Any())
+                        {
+                            <div class="text-muted">Chưa có dữ liệu.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card table-card">
+                    <div class="card-header bg-white"><strong>Hợp đồng theo trạng thái</strong></div>
+                    <div class="card-body">
+                        @foreach (var item in Model.Dashboard.ContractsByStatus)
+                        {
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <span>@DisplayHelper.ContractStatus(Enum.Parse<ContractStatus>(item.Label))</span>
+                                <span class="badge bg-primary">@item.Value</span>
+                            </div>
+                        }
+                        @if (!Model.Dashboard.ContractsByStatus.Any())
+                        {
+                            <div class="text-muted">Chưa có dữ liệu.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

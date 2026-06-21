@@ -1,0 +1,11 @@
+@page "{id:int}"
+@model Website_Quản_Lý_Nhân_Sự.Pages.Contracts.EditModel
+@{ ViewData["Title"] = "Sửa hợp đồng"; }
+<div class="card form-card"><div class="card-body p-4"><form method="post">
+<input type="hidden" asp-for="Contract.Id" /><input type="hidden" asp-for="Contract.EmployeeId" />
+<div class="mb-3"><label class="form-label">Mã hợp đồng</label><input asp-for="Contract.ContractCode" class="form-control" /></div>
+<div class="mb-3"><label class="form-label">Ngày bắt đầu</label><input asp-for="Contract.StartDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Ngày kết thúc</label><input asp-for="Contract.EndDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Mức lương</label><input asp-for="Contract.Salary" class="form-control" type="number" /></div>
+<button class="btn btn-primary">Cập nhật</button> <a asp-page-handler="ExportPdf" asp-route-id="@Model.Contract.Id" class="btn btn-outline-danger">Xuất PDF</a>
+</form></div></div>

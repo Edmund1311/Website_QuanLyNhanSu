@@ -1,0 +1,16 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Employees.IndexModel
+@{ ViewData["Title"] = "Nhân viên"; }
+<div class="page-header d-flex justify-content-between"><div><h1 class="h3">Nhân viên</h1></div><div><a asp-page-handler="ExportExcel" class="btn btn-outline-success me-2">Xuất Excel</a><a asp-page="Create" class="btn btn-primary">Thêm</a></div></div>
+<div class="card table-card mb-3"><div class="card-body"><form method="get" class="row g-2">
+<div class="col-md-3"><input asp-for="Search" class="form-control" placeholder="Tìm kiếm..." /></div>
+<div class="col-md-3"><select asp-for="DepartmentId" class="form-select"><option value="">Tất cả phòng ban</option>@foreach(var d in Model.Departments){<option value="@d.Id">@d.Name</option>}</select></div>
+<div class="col-md-3"><select asp-for="PositionId" class="form-select"><option value="">Tất cả chức vụ</option>@foreach(var p in Model.Positions){<option value="@p.Id">@p.Name</option>}</select></div>
+<div class="col-md-2"><button class="btn btn-outline-primary w-100">Lọc</button></div></form></div></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0 align-middle"><thead><tr><th>Ảnh</th><th>Mã</th><th>Họ tên</th><th>Phòng ban</th><th>Chức vụ</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.Employees){<tr>
+<td><img src="@AvatarHelper.GetUrl(item.AvatarPath)" alt="@item.FullName" class="avatar-thumb" /></td>
+<td>@item.EmployeeCode</td><td>@item.FullName</td><td>@item.Department?.Name</td><td>@item.Position?.Name</td><td>@DisplayHelper.WorkStatus(item.WorkStatus)</td><td class="text-end">
+<a asp-page="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Chi tiết</a>
+<a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Sửa</a>
+<form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline"><button class="btn btn-sm btn-outline-danger">Xóa</button></form></td></tr>}</tbody></table></div></div>

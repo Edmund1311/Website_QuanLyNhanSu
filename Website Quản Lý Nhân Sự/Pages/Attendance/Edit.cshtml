@@ -1,0 +1,10 @@
+@page "{id:int}"
+@model Website_Quản_Lý_Nhân_Sự.Pages.Attendance.EditModel
+@{ ViewData["Title"] = "Sửa chấm công"; }
+<div class="card form-card"><div class="card-body p-4"><form method="post">
+<input type="hidden" asp-for="Attendance.Id" /><input type="hidden" asp-for="Attendance.EmployeeId" />
+<div class="mb-3"><label class="form-label">Ngày</label><input asp-for="Attendance.WorkDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Giờ vào</label><input asp-for="CheckInTime" class="form-control" type="time" /></div>
+<div class="mb-3"><label class="form-label">Giờ ra</label><input asp-for="CheckOutTime" class="form-control" type="time" /></div>
+<div class="mb-3"><label class="form-label">Trạng thái</label><select asp-for="Attendance.Status" class="form-select" asp-items="Html.GetEnumSelectList<AttendanceStatus>()"></select></div>
+<button class="btn btn-primary">Cập nhật</button></form></div></div>

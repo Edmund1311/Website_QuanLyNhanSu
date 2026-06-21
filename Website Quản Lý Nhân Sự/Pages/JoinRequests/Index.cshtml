@@ -1,0 +1,14 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.JoinRequests.IndexModel
+@{ ViewData["Title"] = "Duyệt tham gia công ty"; }
+<div class="page-header"><h1 class="h3">Yêu cầu tham gia đang chờ</h1></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Người dùng</th><th>Email</th><th>Ngày gửi</th><th>Duyệt</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.Requests){<tr><td>@item.User.FullName</td><td>@item.User.Email</td><td>@item.SubmittedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+<td><form method="post" asp-page-handler="Approve" class="row g-2">
+<input type="hidden" name="RequestId" value="@item.Id" />
+<div class="col-md-2"><input name="EmployeeCode" class="form-control form-control-sm" placeholder="Mã NV" required /></div>
+<div class="col-md-3"><select name="DepartmentId" class="form-select form-select-sm" asp-items="@(new SelectList(Model.Departments, "Id", "Name"))" required></select></div>
+<div class="col-md-3"><select name="PositionId" class="form-select form-select-sm" asp-items="@(new SelectList(Model.Positions, "Id", "Name"))" required></select></div>
+<div class="col-md-2"><button class="btn btn-sm btn-success">Duyệt</button></div></form></td>
+<td><form method="post" asp-page-handler="Reject" asp-route-id="@item.Id"><button class="btn btn-sm btn-outline-danger">Từ chối</button></form></td></tr>}
+</tbody></table></div></div>

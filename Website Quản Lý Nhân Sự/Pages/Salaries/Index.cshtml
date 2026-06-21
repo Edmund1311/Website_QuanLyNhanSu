@@ -1,0 +1,7 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Salaries.IndexModel
+@{ ViewData["Title"] = "Bảng lương"; }
+<div class="page-header d-flex justify-content-between"><h1 class="h3">Bảng lương</h1><div><a asp-page-handler="ExportExcel" class="btn btn-outline-success me-2">Xuất Excel</a><a asp-page="Create" class="btn btn-primary">Thêm</a></div></div>
+<div class="card table-card mb-3"><div class="card-body"><form method="get" class="row g-2"><div class="col-md-2"><input asp-for="Month" class="form-control" placeholder="Tháng" /></div><div class="col-md-2"><input asp-for="Year" class="form-control" placeholder="Năm" /></div><div class="col-md-2"><button class="btn btn-outline-primary">Lọc</button></div></form></div></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Nhân viên</th><th>Kỳ</th><th>Cơ bản</th><th>Tổng</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.Salaries){<tr><td>@item.Employee.FullName</td><td>@item.Month/@item.Year</td><td>@DisplayHelper.FormatMoney(item.BaseSalary)</td><td>@DisplayHelper.FormatMoney(item.TotalSalary)</td><td><a asp-page="Edit" asp-page-handler="ExportPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">PDF</a><a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Sửa</a></td></tr>}</tbody></table></div></div>

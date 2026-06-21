@@ -1,0 +1,8 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Contracts.IndexModel
+@{ ViewData["Title"] = "Hợp đồng"; }
+<div class="page-header d-flex justify-content-between"><h1 class="h3">Hợp đồng</h1><a asp-page="Create" class="btn btn-primary">Thêm</a></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Mã HĐ</th><th>Nhân viên</th><th>Bắt đầu</th><th>Kết thúc</th><th>Lương</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.Contracts){<tr><td>@item.ContractCode</td><td>@item.Employee.FullName</td><td>@item.StartDate.ToString("dd/MM/yyyy")</td><td>@item.EndDate.ToString("dd/MM/yyyy")</td><td>@DisplayHelper.FormatMoney(item.Salary)</td><td>@DisplayHelper.ContractStatus(item.Status)</td><td>
+<a asp-page="Edit" asp-page-handler="ExportPdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">PDF</a>
+<a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Sửa</a></td></tr>}</tbody></table></div></div>

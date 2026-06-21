@@ -1,0 +1,17 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Employees.CreateModel
+@{ ViewData["Title"] = "Thêm nhân viên"; }
+<div class="card form-card"><div class="card-body p-4"><form method="post" enctype="multipart/form-data"><div class="row g-3">
+<div class="col-md-4"><label class="form-label">Mã nhân viên</label><input asp-for="Employee.EmployeeCode" class="form-control" /></div>
+<div class="col-md-4"><label class="form-label">Họ tên</label><input asp-for="Employee.FullName" class="form-control" /></div>
+<div class="col-md-4"><label class="form-label">Email</label><input asp-for="Employee.Email" class="form-control" /></div>
+<div class="col-md-4"><label class="form-label">Số điện thoại</label><input asp-for="Employee.Phone" class="form-control" /></div>
+<div class="col-md-4"><label class="form-label">Ngày sinh</label><input asp-for="Employee.DateOfBirth" class="form-control" type="date" /></div>
+<div class="col-md-4"><label class="form-label">Ngày vào làm</label><input asp-for="Employee.HireDate" class="form-control" type="date" /></div>
+<div class="col-md-4"><label class="form-label">Giới tính</label><select asp-for="Employee.Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()"></select></div>
+<div class="col-md-4"><label class="form-label">Phòng ban</label><select asp-for="Employee.DepartmentId" class="form-select" asp-items="@(new SelectList(Model.Departments, "Id", "Name"))"></select></div>
+<div class="col-md-4"><label class="form-label">Chức vụ</label><select asp-for="Employee.PositionId" class="form-select" asp-items="@(new SelectList(Model.Positions, "Id", "Name"))"></select></div>
+<div class="col-md-4"><label class="form-label">Trạng thái</label><select asp-for="Employee.WorkStatus" class="form-select" asp-items="Html.GetEnumSelectList<WorkStatus>()"></select></div>
+<div class="col-12"><label class="form-label">Địa chỉ</label><input asp-for="Employee.Address" class="form-control" /></div>
+<div class="col-md-6"><label class="form-label">Avatar</label><input asp-for="AvatarFile" class="form-control" type="file" /></div>
+</div><div class="mt-4"><button class="btn btn-primary">Lưu</button></div></form></div></div>

@@ -1,0 +1,9 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Attendance.IndexModel
+@{ ViewData["Title"] = "Chấm công"; }
+<div class="page-header d-flex justify-content-between"><h1 class="h3">Chấm công</h1><div><a asp-page-handler="ExportExcel" class="btn btn-outline-success me-2">Xuất Excel</a><a asp-page="Create" class="btn btn-primary">Thêm</a></div></div>
+<div class="card table-card mb-3"><div class="card-body"><form method="get" class="row g-2">
+<div class="col-md-4"><select asp-for="EmployeeId" class="form-select"><option value="">Tất cả nhân viên</option>@foreach(var e in Model.Employees){<option value="@e.Id">@e.FullName</option>}</select></div>
+<div class="col-md-3"><input asp-for="Date" class="form-control" type="date" /></div><div class="col-md-2"><button class="btn btn-outline-primary">Lọc</button></div></form></div></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Nhân viên</th><th>Ngày</th><th>Vào</th><th>Ra</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.Records){<tr><td>@item.Employee.FullName</td><td>@item.WorkDate.ToString("dd/MM/yyyy")</td><td>@item.CheckIn</td><td>@item.CheckOut</td><td>@item.Status</td><td><a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Sửa</a></td></tr>}</tbody></table></div></div>

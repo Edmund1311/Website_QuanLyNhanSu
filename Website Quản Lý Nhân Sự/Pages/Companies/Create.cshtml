@@ -1,0 +1,18 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Companies.CreateModel
+@{ ViewData["Title"] = "Thêm công ty"; }
+
+<div class="page-header"><h1 class="h3">Thêm công ty</h1></div>
+<div class="card form-card"><div class="card-body p-4">
+<form method="post">
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Tên công ty</label><input asp-for="Company.Name" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Mã công ty (để trống = tự sinh)</label><input asp-for="Company.Code" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Email</label><input asp-for="Company.Email" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Số điện thoại</label><input asp-for="Company.Phone" class="form-control" /></div>
+        <div class="col-12"><label class="form-label">Địa chỉ</label><input asp-for="Company.Address" class="form-control" /></div>
+        <div class="col-12"><label class="form-label">Mô tả</label><textarea asp-for="Company.Description" class="form-control" rows="3"></textarea></div>
+    </div>
+    <div class="mt-4"><button class="btn btn-primary">Lưu</button> <a asp-page="Index" class="btn btn-link">Hủy</a></div>
+</form>
+</div></div>

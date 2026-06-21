@@ -1,0 +1,9 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.EmployeeMedia.IndexModel
+@{ ViewData["Title"] = "Hồ sơ điện tử"; }
+<div class="page-header"><h1 class="h3">Hồ sơ điện tử</h1></div>
+<div class="card form-card mb-4"><div class="card-body p-4"><form method="post" enctype="multipart/form-data"><div class="row g-2"><div class="col-md-6"><input asp-for="UploadFile" class="form-control" type="file" required /></div><div class="col-md-2"><button asp-page-handler="Upload" class="btn btn-primary">Upload</button></div></div></form></div></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Tên file</th><th>Loại</th><th>Ngày tải</th><th></th></tr></thead><tbody>
+@foreach(var item in Model.MediaFiles){<tr><td>@item.FileName</td><td>@item.MediaType</td><td>@item.UploadedAt.ToLocalTime()</td><td>
+<a asp-page-handler="Download" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Tải</a>
+<form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline"><button class="btn btn-sm btn-outline-danger">Xóa</button></form></td></tr>}</tbody></table></div></div>

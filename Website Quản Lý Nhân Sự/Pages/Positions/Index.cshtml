@@ -1,0 +1,9 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Positions.IndexModel
+@{ ViewData["Title"] = "Chức vụ"; }
+<div class="page-header d-flex justify-content-between"><h1 class="h3">Chức vụ</h1><a asp-page="Create" class="btn btn-primary">Thêm</a></div>
+<div class="card table-card mb-3"><div class="card-body"><form method="get" class="row g-2"><div class="col-md-6"><input asp-for="Search" class="form-control" placeholder="Tìm kiếm..." /></div><div class="col-md-2"><button class="btn btn-outline-primary">Tìm</button></div></form></div></div>
+<div class="card table-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Tên</th><th>Lương cơ bản</th><th>Mô tả</th><th></th></tr></thead><tbody>
+@foreach (var item in Model.Positions){<tr><td>@item.Name</td><td>@DisplayHelper.FormatMoney(item.BaseSalary)</td><td>@item.Description</td><td class="text-end">
+<a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Sửa</a>
+<form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline"><button class="btn btn-sm btn-outline-danger">Xóa</button></form></td></tr>}</tbody></table></div></div>

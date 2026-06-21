@@ -1,0 +1,10 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.Contracts.CreateModel
+@{ ViewData["Title"] = "Thêm hợp đồng"; }
+<div class="card form-card"><div class="card-body p-4"><form method="post">
+<div class="mb-3"><label class="form-label">Nhân viên</label><select asp-for="Contract.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))"></select></div>
+<div class="mb-3"><label class="form-label">Mã hợp đồng</label><input asp-for="Contract.ContractCode" class="form-control" /></div>
+<div class="mb-3"><label class="form-label">Ngày bắt đầu</label><input asp-for="Contract.StartDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Ngày kết thúc</label><input asp-for="Contract.EndDate" class="form-control" type="date" /></div>
+<div class="mb-3"><label class="form-label">Mức lương</label><input asp-for="Contract.Salary" class="form-control" type="number" /></div>
+<button class="btn btn-primary">Lưu</button></form></div></div>
