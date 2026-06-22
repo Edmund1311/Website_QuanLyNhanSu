@@ -37,8 +37,15 @@ public class IndexModel : SecurePageModel
     public async Task<IActionResult> OnPostDeleteAsync(int id)
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        await _departmentService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Xóa phòng ban thành công.";
+        var result = await _departmentService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+        }
+        else
+        {
+            TempData["Message"] = result.Message;
+        }
         return RedirectToPage();
     }
 }
@@ -72,9 +79,14 @@ public class CreateModel : SecurePageModel
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
         if (!ModelState.IsValid) return Page();
 
-        Department.CompanyId = CurrentUser.CompanyId.Value;
-        await _departmentService.CreateAsync(Department);
-        TempData["Message"] = "Thêm phòng ban thành công.";
+        var result = await _departmentService.CreateAsync(Department, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            return Page();
+        }
+
+        TempData["Message"] = result.Message;
         return RedirectToPage("Index");
     }
 }
@@ -105,9 +117,15 @@ public class EditModel : SecurePageModel
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
         if (!ModelState.IsValid) return Page();
-        Department.CompanyId = CurrentUser.CompanyId.Value;
-        await _departmentService.UpdateAsync(Department);
-        TempData["Message"] = "Cập nhật phòng ban thành công.";
+
+        var result = await _departmentService.UpdateAsync(Department, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            return Page();
+        }
+
+        TempData["Message"] = result.Message;
         return RedirectToPage("Index");
     }
 }

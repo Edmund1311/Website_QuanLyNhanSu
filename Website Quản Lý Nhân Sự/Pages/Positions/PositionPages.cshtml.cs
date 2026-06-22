@@ -22,8 +22,15 @@ public class IndexModel : SecurePageModel
     public async Task<IActionResult> OnPostDeleteAsync(int id)
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        await _positionService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Xóa chức vụ thành công.";
+        var result = await _positionService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+        }
+        else
+        {
+            TempData["Message"] = result.Message;
+        }
         return RedirectToPage();
     }
 }
@@ -38,9 +45,16 @@ public class CreateModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        Position.CompanyId = CurrentUser.CompanyId.Value;
-        await _positionService.CreateAsync(Position);
-        TempData["Message"] = "Thêm chức vụ thành công.";
+        if (!ModelState.IsValid) return Page();
+
+        var result = await _positionService.CreateAsync(Position, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            return Page();
+        }
+
+        TempData["Message"] = result.Message;
         return RedirectToPage("Index");
     }
 }
@@ -61,9 +75,16 @@ public class EditModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        Position.CompanyId = CurrentUser.CompanyId.Value;
-        await _positionService.UpdateAsync(Position);
-        TempData["Message"] = "Cập nhật chức vụ thành công.";
+        if (!ModelState.IsValid) return Page();
+
+        var result = await _positionService.UpdateAsync(Position, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            return Page();
+        }
+
+        TempData["Message"] = result.Message;
         return RedirectToPage("Index");
     }
 }

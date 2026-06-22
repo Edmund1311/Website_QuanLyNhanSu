@@ -54,8 +54,15 @@ public class IndexModel : SecurePageModel
     public async Task<IActionResult> OnPostDeleteAsync(int id)
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        await _employeeService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Xóa nhân viên thành công.";
+        var result = await _employeeService.SoftDeleteAsync(id, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+        }
+        else
+        {
+            TempData["Message"] = result.Message;
+        }
         return RedirectToPage();
     }
 }
