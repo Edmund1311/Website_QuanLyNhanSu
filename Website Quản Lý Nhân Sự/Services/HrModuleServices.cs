@@ -29,6 +29,7 @@ public class AttendanceService : IAttendanceService
     public async Task<List<Attendance>> GetAllAsync(int companyId, int? employeeId = null, DateTime? date = null)
     {
         var query = _context.Attendances
+            .AsNoTracking()
             .Include(a => a.Employee)
             .Where(a => a.Employee.CompanyId == companyId);
 
@@ -47,6 +48,7 @@ public class AttendanceService : IAttendanceService
 
     public Task<Attendance?> GetByIdAsync(int id, int companyId)
         => _context.Attendances
+            .AsNoTracking()
             .Include(a => a.Employee)
             .FirstOrDefaultAsync(a => a.Id == id && a.Employee.CompanyId == companyId);
 
@@ -184,12 +186,14 @@ public class ContractService : IContractService
     public async Task<List<Contract>> GetAllAsync(int companyId, string? search = null)
     {
         var query = _context.Contracts
+            .AsNoTracking()
             .Include(c => c.Employee)
             .Where(c => c.Employee.CompanyId == companyId);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(c => c.ContractCode.Contains(search) || c.Employee.FullName.Contains(search));
+            var searchLower = search.ToLower();
+            query = query.Where(c => c.ContractCode.ToLower().Contains(searchLower) || c.Employee.FullName.ToLower().Contains(searchLower));
         }
 
         return await query.OrderByDescending(c => c.StartDate).ToListAsync();
@@ -197,6 +201,7 @@ public class ContractService : IContractService
 
     public Task<Contract?> GetByIdAsync(int id, int companyId)
         => _context.Contracts
+            .AsNoTracking()
             .Include(c => c.Employee)
             .FirstOrDefaultAsync(c => c.Id == id && c.Employee.CompanyId == companyId);
 
@@ -275,6 +280,7 @@ public class SalaryService : ISalaryService
     public async Task<List<Salary>> GetAllAsync(int companyId, int? month = null, int? year = null)
     {
         var query = _context.Salaries
+            .AsNoTracking()
             .Include(s => s.Employee)
             .Where(s => s.Employee.CompanyId == companyId);
 
@@ -293,6 +299,7 @@ public class SalaryService : ISalaryService
 
     public Task<Salary?> GetByIdAsync(int id, int companyId)
         => _context.Salaries
+            .AsNoTracking()
             .Include(s => s.Employee)
             .FirstOrDefaultAsync(s => s.Id == id && s.Employee.CompanyId == companyId);
 
@@ -358,12 +365,15 @@ public class EmployeeMediaService : IEmployeeMediaService
 
     public Task<List<EmployeeMedia>> GetForEmployeeAsync(int employeeId)
         => _context.EmployeeMedia
+            .AsNoTracking()
             .Where(m => m.EmployeeId == employeeId)
             .OrderByDescending(m => m.UploadedAt)
             .ToListAsync();
 
     public Task<EmployeeMedia?> GetByIdAsync(int id, int employeeId)
-        => _context.EmployeeMedia.FirstOrDefaultAsync(m => m.Id == id && m.EmployeeId == employeeId);
+        => _context.EmployeeMedia
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id && m.EmployeeId == employeeId);
 
     public async Task CreateAsync(EmployeeMedia media)
     {

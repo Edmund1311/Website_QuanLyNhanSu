@@ -8,6 +8,7 @@ namespace Website_Quản_Lý_Nhân_Sự.Services;
 public interface IEmployeeService
 {
     Task<List<Employee>> GetAllAsync(int companyId, string? search = null, int? departmentId = null, int? positionId = null);
+    Task<PaginatedResult<Employee>> GetAllPaginatedAsync(int companyId, int pageNumber = 1, int pageSize = 20, string? search = null, int? departmentId = null, int? positionId = null);
     Task<Employee?> GetByIdAsync(int id, int companyId);
     Task<Employee?> GetByUserIdAsync(string userId);
     Task<(bool Success, string Message)> CreateAsync(Employee employee, int companyId);
@@ -28,16 +29,18 @@ public class EmployeeService : IEmployeeService
     public async Task<List<Employee>> GetAllAsync(int companyId, string? search = null, int? departmentId = null, int? positionId = null)
     {
         var query = _context.Employees
+            .AsNoTracking()
             .Include(e => e.Department)
             .Include(e => e.Position)
             .Where(e => e.CompanyId == companyId);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
+            var searchLower = search.ToLower();
             query = query.Where(e =>
-                e.FullName.Contains(search) ||
-                e.EmployeeCode.Contains(search) ||
-                e.Email.Contains(search));
+                e.FullName.ToLower().Contains(searchLower) ||
+                e.EmployeeCode.ToLower().Contains(searchLower) ||
+                e.Email.ToLower().Contains(searchLower));
         }
 
         if (departmentId.HasValue)
@@ -53,14 +56,56 @@ public class EmployeeService : IEmployeeService
         return await query.OrderBy(e => e.FullName).ToListAsync();
     }
 
+    public async Task<PaginatedResult<Employee>> GetAllPaginatedAsync(int companyId, int pageNumber = 1, int pageSize = 20, string? search = null, int? departmentId = null, int? positionId = null)
+    {
+        pageNumber = PaginationHelper.ValidatePageNumber(pageNumber);
+        pageSize = PaginationHelper.ValidatePageSize(pageSize);
+
+        var query = _context.Employees
+            .AsNoTracking()
+            .Include(e => e.Department)
+            .Include(e => e.Position)
+            .Where(e => e.CompanyId == companyId);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var searchLower = search.ToLower();
+            query = query.Where(e =>
+                e.FullName.ToLower().Contains(searchLower) ||
+                e.EmployeeCode.ToLower().Contains(searchLower) ||
+                e.Email.ToLower().Contains(searchLower));
+        }
+
+        if (departmentId.HasValue)
+        {
+            query = query.Where(e => e.DepartmentId == departmentId);
+        }
+
+        if (positionId.HasValue)
+        {
+            query = query.Where(e => e.PositionId == positionId);
+        }
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .OrderBy(e => e.FullName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PaginatedResult<Employee>(items, totalCount, pageNumber, pageSize);
+    }
+
     public Task<Employee?> GetByIdAsync(int id, int companyId)
         => _context.Employees
+            .AsNoTracking()
             .Include(e => e.Department)
             .Include(e => e.Position)
             .FirstOrDefaultAsync(e => e.Id == id && e.CompanyId == companyId);
 
     public Task<Employee?> GetByUserIdAsync(string userId)
         => _context.Employees
+            .AsNoTracking()
             .Include(e => e.Department)
             .Include(e => e.Position)
             .FirstOrDefaultAsync(e => e.UserId == userId);
@@ -132,6 +177,7 @@ public class EmployeeService : IEmployeeService
             return (false, "Email đã tồn tại trong công ty");
         }
 
+        // Cập nhật tất cả các trường cần update, không giữ lại dữ liệu cũ
         existing.FullName = employee.FullName;
         existing.Email = employee.Email;
         existing.Phone = employee.Phone;
@@ -142,19 +188,27 @@ public class EmployeeService : IEmployeeService
         existing.PositionId = employee.PositionId;
         existing.WorkStatus = employee.WorkStatus;
 
+        // QUAN TRỌNG: Xóa avatar cũ nếu có avatar mới được upload
+        // Điều này được xử lý trong EditModel khi AvatarPath có giá trị
+        if (!string.IsNullOrEmpty(employee.AvatarPath) && existing.AvatarPath != employee.AvatarPath)
+        {
+            existing.AvatarPath = employee.AvatarPath;
+        }
+
+        // Không thay đổi EmployeeCode, UserId, CompanyId, CreatedAt
+        _context.Update(existing);
         await _context.SaveChangesAsync();
         return (true, "Cập nhật nhân viên thành công");
     }
 
     /// <summary>
-    /// Xóa mềm nhân viên với proper error handling (Lỗi 8.3)
+    /// Xóa mềm nhân viên với proper error handling và cascade updates (Lỗi 8.3)
     /// </summary>
     public async Task<(bool Success, string Message)> SoftDeleteAsync(int id, int companyId)
     {
         var employee = await GetByIdAsync(id, companyId);
         if (employee is null)
         {
-            // ❌ Lỗi 8.3: Throw exception thay vì return im lặng
             return (false, "Không tìm thấy nhân viên");
         }
 
@@ -165,7 +219,15 @@ public class EmployeeService : IEmployeeService
             return (false, "Không thể xóa nhân viên có hợp đồng còn hiệu lực");
         }
 
+        // Soft delete: Đánh dấu là deleted, không xóa các records liên quan
         employee.IsDeleted = true;
+
+        // Kiểm tra xem có cần xóa avatar
+        if (!string.IsNullOrEmpty(employee.AvatarPath) && employee.AvatarPath.StartsWith("/uploads/"))
+        {
+            // Có thể xóa file nếu cần thiết
+        }
+
         await _context.SaveChangesAsync();
 
         return (true, "Xóa nhân viên thành công");

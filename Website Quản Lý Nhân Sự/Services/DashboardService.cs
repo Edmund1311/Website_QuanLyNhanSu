@@ -51,10 +51,19 @@ public class DashboardService : IDashboardService
     {
         var model = new DashboardViewModel();
 
-        IQueryable<Employee> employees = _context.Employees.Include(e => e.Department).Where(e => e.CompanyId == companyId);
-        IQueryable<Department> departments = _context.Departments.Where(d => d.CompanyId == companyId);
-        IQueryable<Position> positions = _context.Positions.Where(p => p.CompanyId == companyId);
-        IQueryable<Contract> contracts = _context.Contracts.Where(c => c.Employee.CompanyId == companyId);
+        IQueryable<Employee> employees = _context.Employees
+            .AsNoTracking()
+            .Include(e => e.Department)
+            .Where(e => e.CompanyId == companyId);
+        IQueryable<Department> departments = _context.Departments
+            .AsNoTracking()
+            .Where(d => d.CompanyId == companyId);
+        IQueryable<Position> positions = _context.Positions
+            .AsNoTracking()
+            .Where(p => p.CompanyId == companyId);
+        IQueryable<Contract> contracts = _context.Contracts
+            .AsNoTracking()
+            .Where(c => c.Employee.CompanyId == companyId);
 
         model.TotalEmployees = await employees.CountAsync();
         model.TotalDepartments = await departments.CountAsync();
@@ -79,6 +88,7 @@ public class DashboardService : IDashboardService
     public async Task<EmployeeDashboardViewModel?> GetEmployeeDashboardAsync(string userId)
     {
         var employee = await _context.Employees
+            .AsNoTracking()
             .Include(e => e.Department)
             .Include(e => e.Position)
             .Include(e => e.Company)

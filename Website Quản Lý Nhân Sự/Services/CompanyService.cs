@@ -35,24 +35,25 @@ public class CompanyService : ICompanyService
 
     public async Task<List<Company>> GetAllAsync(string? search = null)
     {
-        var query = _context.Companies.AsQueryable();
+        var query = _context.Companies.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
+            var searchLower = search.ToLower();
             query = query.Where(c =>
-                c.Name.Contains(search) ||
-                c.Code.Contains(search) ||
-                (c.Email != null && c.Email.Contains(search)));
+                c.Name.ToLower().Contains(searchLower) ||
+                c.Code.ToLower().Contains(searchLower) ||
+                (c.Email != null && c.Email.ToLower().Contains(searchLower)));
         }
 
         return await query.OrderByDescending(c => c.CreatedAt).ToListAsync();
     }
 
     public Task<Company?> GetByIdAsync(int id)
-        => _context.Companies.FirstOrDefaultAsync(c => c.Id == id);
+        => _context.Companies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
 
     public Task<Company?> GetByCodeAsync(string code)
-        => _context.Companies.FirstOrDefaultAsync(c => c.Code == code);
+        => _context.Companies.AsNoTracking().FirstOrDefaultAsync(c => c.Code == code);
 
     public async Task<(bool Success, string Message)> CreateAsync(Company company)
     {

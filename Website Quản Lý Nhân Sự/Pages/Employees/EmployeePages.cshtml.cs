@@ -28,12 +28,16 @@ public class IndexModel : SecurePageModel
     [BindProperty(SupportsGet = true)] public string? Search { get; set; }
     [BindProperty(SupportsGet = true)] public int? DepartmentId { get; set; }
     [BindProperty(SupportsGet = true)] public int? PositionId { get; set; }
+    [BindProperty(SupportsGet = true)] public int PageNumber { get; set; } = 1;
+    [BindProperty(SupportsGet = true)] public int PageSize { get; set; } = 20;
+    public PaginatedResult<Employee> PaginatedEmployees { get; set; } = new();
 
     public async Task<IActionResult> OnGetAsync()
     {
         if (CurrentUser.CompanyId is null) { TempData["Error"] = "Tài khoản chưa thuộc công ty."; return RedirectToPage("/Dashboard/Index"); }
         var companyId = CurrentUser.CompanyId.Value;
-        Employees = await _employeeService.GetAllAsync(companyId, Search, DepartmentId, PositionId);
+        PaginatedEmployees = await _employeeService.GetAllPaginatedAsync(companyId, PageNumber, PageSize, Search, DepartmentId, PositionId);
+        Employees = PaginatedEmployees.Items;
         Departments = await _departmentService.GetAllAsync(companyId);
         Positions = await _positionService.GetAllAsync(companyId);
         return Page();
@@ -126,11 +130,36 @@ public class EditModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
+
+        // Get current employee to preserve data that shouldn't change
+        var existing = await _employeeService.GetByIdAsync(Employee.Id, CurrentUser.CompanyId.Value);
+        if (existing is null)
+        {
+            TempData["Error"] = "Không tìm thấy nhân viên.";
+            return RedirectToPage("Index");
+        }
+
         Employee.CompanyId = CurrentUser.CompanyId.Value;
+
+        // Handle avatar: only update if a new file is uploaded, otherwise preserve old
         if (AvatarFile is not null)
+        {
             Employee.AvatarPath = await FileUploadHelper.SaveFileAsync(AvatarFile, _env.WebRootPath, "avatars");
-        await _employeeService.UpdateAsync(Employee, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Cập nhật nhân viên thành công.";
+        }
+        else
+        {
+            // Preserve old avatar if no new file uploaded
+            Employee.AvatarPath = existing.AvatarPath;
+        }
+
+        var result = await _employeeService.UpdateAsync(Employee, CurrentUser.CompanyId.Value);
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            return RedirectToPage("Index");
+        }
+
+        TempData["Message"] = result.Message;
         return RedirectToPage("Index");
     }
 }

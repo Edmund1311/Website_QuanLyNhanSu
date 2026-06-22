@@ -46,6 +46,7 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AuthorizeFolder("/Contracts");
     options.Conventions.AuthorizeFolder("/Salaries");
     options.Conventions.AuthorizeFolder("/EmployeeMedia");
+    options.Conventions.AuthorizeFolder("/AdminManagement");
     options.Conventions.AllowAnonymousToFolder("/Account");
     options.Conventions.AllowAnonymousToPage("/Index");
 });
@@ -62,6 +63,7 @@ builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<ISalaryService, SalaryService>();
 builder.Services.AddScoped<IEmployeeMediaService, EmployeeMediaService>();
+builder.Services.AddScoped<IAdminManagementService, AdminManagementService>();
 
 var app = builder.Build();
 

@@ -24,18 +24,23 @@ public class DepartmentService : IDepartmentService
 
     public async Task<List<Department>> GetAllAsync(int companyId, string? search = null)
     {
-        var query = _context.Departments.Where(d => d.CompanyId == companyId);
+        var query = _context.Departments
+            .AsNoTracking()
+            .Where(d => d.CompanyId == companyId);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(d => d.Name.Contains(search));
+            var searchLower = search.ToLower();
+            query = query.Where(d => d.Name.ToLower().Contains(searchLower));
         }
 
         return await query.OrderBy(d => d.Name).ToListAsync();
     }
 
     public Task<Department?> GetByIdAsync(int id, int companyId)
-        => _context.Departments.FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == companyId);
+        => _context.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == companyId);
 
     public async Task CreateAsync(Department department)
     {
@@ -82,18 +87,23 @@ public class PositionService : IPositionService
 
     public async Task<List<Position>> GetAllAsync(int companyId, string? search = null)
     {
-        var query = _context.Positions.Where(p => p.CompanyId == companyId);
+        var query = _context.Positions
+            .AsNoTracking()
+            .Where(p => p.CompanyId == companyId);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(p => p.Name.Contains(search));
+            var searchLower = search.ToLower();
+            query = query.Where(p => p.Name.ToLower().Contains(searchLower));
         }
 
         return await query.OrderBy(p => p.Name).ToListAsync();
     }
 
     public Task<Position?> GetByIdAsync(int id, int companyId)
-        => _context.Positions.FirstOrDefaultAsync(p => p.Id == id && p.CompanyId == companyId);
+        => _context.Positions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id && p.CompanyId == companyId);
 
     public async Task CreateAsync(Position position)
     {
