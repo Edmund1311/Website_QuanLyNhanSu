@@ -58,8 +58,9 @@ public static class ValidationHelper
         if (string.IsNullOrWhiteSpace(path))
             return null;
 
-        // Chỉ cho phép path dưới /uploads/media/
-        if (!path.StartsWith("/uploads/media/", StringComparison.OrdinalIgnoreCase))
+        // Chỉ cho phép path dưới /uploads/media/ hoặc /uploads/avatars/
+        if (!path.StartsWith("/uploads/media/", StringComparison.OrdinalIgnoreCase) &&
+            !path.StartsWith("/uploads/avatars/", StringComparison.OrdinalIgnoreCase))
         {
             return null; // Từ chối
         }

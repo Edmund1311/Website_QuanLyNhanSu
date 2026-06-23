@@ -58,11 +58,23 @@ public class CreateModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.UserId is null) return RedirectToPage("/Account/Login");
-        var employee = await _employeeService.GetByUserIdAsync(CurrentUser.UserId);
-        if (employee is null) { TempData["Error"] = "Bạn chưa thuộc công ty."; return RedirectToPage("/JoinRequests/My"); }
-        LeaveRequest.EmployeeId = employee.Id;
-        await _leaveRequestService.CreateAsync(LeaveRequest, employee.CompanyId);
-        TempData["Message"] = "Gửi đơn nghỉ phép thành công.";
-        return RedirectToPage("Index");
+        try
+        {
+            var employee = await _employeeService.GetByUserIdAsync(CurrentUser.UserId);
+            if (employee is null)
+            {
+                TempData["Error"] = "Bạn chưa thuộc công ty.";
+                return RedirectToPage("/JoinRequests/My");
+            }
+            LeaveRequest.EmployeeId = employee.Id;
+            await _leaveRequestService.CreateAsync(LeaveRequest, employee.CompanyId);
+            TempData["Message"] = "Gửi đơn nghỉ phép thành công.";
+            return RedirectToPage("Index");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            return Page();
+        }
     }
 }

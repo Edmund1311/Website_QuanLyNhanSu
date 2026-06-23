@@ -28,6 +28,9 @@
                     <a class="nav-link @(Context.Request.Path.Value?.Contains("/Companies") == true ? "active" : "")" asp-page="/Companies/Index">
                         <i class="bi bi-building me-2"></i>Công ty
                     </a>
+                    <a class="nav-link @(Context.Request.Path.Value?.Contains("/AdminManagement") == true ? "active" : "")" asp-page="/AdminManagement/Index">
+                        <i class="bi bi-shield-check me-2"></i>Quản lý quản trị viên
+                    </a>
                 }
                 else if (canManageHR)
                 {

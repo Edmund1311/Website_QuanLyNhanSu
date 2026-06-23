@@ -111,6 +111,15 @@ public class EmployeeService : IEmployeeService
             .FirstOrDefaultAsync(e => e.UserId == userId);
 
     /// <summary>
+    /// Get employee with tracking for update operations (fixes avatar update issue)
+    /// </summary>
+    private Task<Employee?> GetEmployeeByIdForUpdateAsync(int id, int companyId)
+        => _context.Employees
+            .Include(e => e.Department)
+            .Include(e => e.Position)
+            .FirstOrDefaultAsync(e => e.Id == id && e.CompanyId == companyId);
+
+    /// <summary>
     /// Tạo nhân viên với validation (Lỗi 11.3)
     /// </summary>
     public async Task<(bool Success, string Message)> CreateAsync(Employee employee, int companyId)
@@ -203,34 +212,73 @@ public class EmployeeService : IEmployeeService
 
     /// <summary>
     /// Xóa mềm nhân viên với proper error handling và cascade updates (Lỗi 8.3)
+    /// Cập nhật: Cho phép xóa nhân viên ngay cả khi có hợp đồng Active (soft delete)
+    /// Xử lý: Xóa tất cả dữ liệu liên quan trước khi soft delete employee
     /// </summary>
     public async Task<(bool Success, string Message)> SoftDeleteAsync(int id, int companyId)
     {
-        var employee = await GetByIdAsync(id, companyId);
-        if (employee is null)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            return (false, "Không tìm thấy nhân viên");
-        }
+            var employee = await _context.Employees
+                .Include(e => e.Attendances)
+                .Include(e => e.LeaveRequests)
+                .Include(e => e.Contracts)
+                .Include(e => e.Salaries)
+                .Include(e => e.MediaFiles)
+                .FirstOrDefaultAsync(e => e.Id == id && e.CompanyId == companyId);
 
-        // Kiểm tra không thể xóa nếu có hợp đồng Active
-        var hasActiveContract = await _context.Contracts.AnyAsync(c => c.EmployeeId == id && c.Status == Models.Enums.ContractStatus.Active);
-        if (hasActiveContract)
+            if (employee is null)
+            {
+                await transaction.RollbackAsync();
+                return (false, "Không tìm thấy nhân viên");
+            }
+
+            // Xóa tất cả dữ liệu liên quan để tránh Foreign Key Constraint
+            if (employee.Attendances?.Any() == true)
+            {
+                _context.Attendances.RemoveRange(employee.Attendances);
+            }
+
+            if (employee.LeaveRequests?.Any() == true)
+            {
+                _context.LeaveRequests.RemoveRange(employee.LeaveRequests);
+            }
+
+            if (employee.Contracts?.Any() == true)
+            {
+                _context.Contracts.RemoveRange(employee.Contracts);
+            }
+
+            if (employee.Salaries?.Any() == true)
+            {
+                _context.Salaries.RemoveRange(employee.Salaries);
+            }
+
+            if (employee.MediaFiles?.Any() == true)
+            {
+                _context.EmployeeMedia.RemoveRange(employee.MediaFiles);
+            }
+
+            // Soft delete: Đánh dấu là deleted
+            employee.IsDeleted = true;
+
+            // Kiểm tra xem có cần xóa avatar
+            if (!string.IsNullOrEmpty(employee.AvatarPath) && employee.AvatarPath.StartsWith("/uploads/"))
+            {
+                // Có thể xóa file nếu cần thiết
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return (true, "Xóa nhân viên thành công");
+        }
+        catch (Exception ex)
         {
-            return (false, "Không thể xóa nhân viên có hợp đồng còn hiệu lực");
+            await transaction.RollbackAsync();
+            return (false, $"Lỗi khi xóa nhân viên: {ex.Message}");
         }
-
-        // Soft delete: Đánh dấu là deleted, không xóa các records liên quan
-        employee.IsDeleted = true;
-
-        // Kiểm tra xem có cần xóa avatar
-        if (!string.IsNullOrEmpty(employee.AvatarPath) && employee.AvatarPath.StartsWith("/uploads/"))
-        {
-            // Có thể xóa file nếu cần thiết
-        }
-
-        await _context.SaveChangesAsync();
-
-        return (true, "Xóa nhân viên thành công");
     }
 
     /// <summary>
@@ -238,7 +286,8 @@ public class EmployeeService : IEmployeeService
     /// </summary>
     public async Task<(bool Success, string Message)> UpdateAvatarAsync(int id, int companyId, string avatarPath)
     {
-        var employee = await GetByIdAsync(id, companyId);
+        // Use tracked query for update
+        var employee = await GetEmployeeByIdForUpdateAsync(id, companyId);
         if (employee is null)
         {
             return (false, "Không tìm thấy nhân viên");

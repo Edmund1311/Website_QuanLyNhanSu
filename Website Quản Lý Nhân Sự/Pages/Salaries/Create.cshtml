@@ -1,8 +1,24 @@
 @page
 @model Website_Quản_Lý_Nhân_Sự.Pages.Salaries.CreateModel
 @{ ViewData["Title"] = "Thêm bảng lương"; }
+<div class="page-header"><h1 class="h3">Thêm bảng lương</h1></div>
 <div class="card form-card"><div class="card-body p-4"><form method="post">
-<div class="mb-3"><label class="form-label">Nhân viên</label><select asp-for="Salary.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))"></select></div>
-<div class="row g-3"><div class="col-md-3"><label class="form-label">Tháng</label><input asp-for="Salary.Month" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Năm</label><input asp-for="Salary.Year" class="form-control" type="number" /></div></div>
-<div class="row g-3 mt-1"><div class="col-md-3"><label class="form-label">Lương cơ bản</label><input asp-for="Salary.BaseSalary" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Phụ cấp</label><input asp-for="Salary.Allowance" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Thưởng</label><input asp-for="Salary.Bonus" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Khấu trừ</label><input asp-for="Salary.Deduction" class="form-control" type="number" /></div></div>
-<button class="btn btn-primary mt-3">Lưu</button></form></div></div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                @foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+<div class="mb-3"><label class="form-label">Nhân viên <span class="text-danger">*</span></label><select asp-for="Salary.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))" required></select></div>
+<div class="row g-3"><div class="col-md-3"><label class="form-label">Tháng <span class="text-danger">*</span></label><input asp-for="Salary.Month" class="form-control" type="number" required /></div><div class="col-md-3"><label class="form-label">Năm <span class="text-danger">*</span></label><input asp-for="Salary.Year" class="form-control" type="number" required /></div></div>
+<div class="row g-3 mt-1"><div class="col-md-3"><label class="form-label">Lương cơ bản <span class="text-danger">*</span></label><input asp-for="Salary.BaseSalary" class="form-control" type="number" required /></div><div class="col-md-3"><label class="form-label">Phụ cấp</label><input asp-for="Salary.Allowance" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Thưởng</label><input asp-for="Salary.Bonus" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Khấu trừ</label><input asp-for="Salary.Deduction" class="form-control" type="number" /></div></div>
+<button class="btn btn-primary mt-3">Lưu</button> <a asp-page="Index" class="btn btn-link">Hủy</a></form></div></div>

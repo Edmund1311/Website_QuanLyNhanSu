@@ -1,0 +1,58 @@
+@page
+@model Website_Quản_Lý_Nhân_Sự.Pages.AdminManagement.AssignModel
+@{ ViewData["Title"] = "Cấp tài khoản cho công ty"; }
+
+<div class="page-header">
+    <h1 class="h3">Cấp tài khoản cho công ty</h1>
+</div>
+
+<div class="card form-card">
+    <div class="card-body p-4">
+        <form method="post">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label">Người dùng <span class="text-danger">*</span></label>
+                <select asp-for="Input.UserId" class="form-select" required>
+                    <option value="">-- Chọn người dùng --</option>
+                    @foreach (var user in Model.AvailableUsers)
+                    {
+                        <option value="@user.Id">@user.Email</option>
+                    }
+                </select>
+                <span asp-validation-for="Input.UserId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Công ty <span class="text-danger">*</span></label>
+                <select asp-for="Input.CompanyId" class="form-select" required>
+                    <option value="0">-- Chọn công ty --</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.Id">@company.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Input.CompanyId" class="text-danger"></span>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary">Cấp tài khoản</button>
+                <a asp-page="Index" class="btn btn-link">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>

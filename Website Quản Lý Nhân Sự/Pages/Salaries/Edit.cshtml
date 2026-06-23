@@ -1,9 +1,25 @@
 @page "{id:int}"
 @model Website_Quản_Lý_Nhân_Sự.Pages.Salaries.EditModel
 @{ ViewData["Title"] = "Sửa bảng lương"; }
+<div class="page-header"><h1 class="h3">Sửa bảng lương</h1></div>
 <div class="card form-card"><div class="card-body p-4"><form method="post">
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                @foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
 <input type="hidden" asp-for="Salary.Id" /><input type="hidden" asp-for="Salary.EmployeeId" />
-<div class="row g-3"><div class="col-md-3"><label class="form-label">Tháng</label><input asp-for="Salary.Month" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Năm</label><input asp-for="Salary.Year" class="form-control" type="number" /></div></div>
-<div class="row g-3 mt-1"><div class="col-md-3"><label class="form-label">Lương cơ bản</label><input asp-for="Salary.BaseSalary" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Phụ cấp</label><input asp-for="Salary.Allowance" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Thưởng</label><input asp-for="Salary.Bonus" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Khấu trừ</label><input asp-for="Salary.Deduction" class="form-control" type="number" /></div></div>
-<button class="btn btn-primary mt-3">Cập nhật</button> <a asp-page-handler="ExportPdf" asp-route-id="@Model.Salary.Id" class="btn btn-outline-danger mt-3">Xuất PDF</a>
+<div class="row g-3"><div class="col-md-3"><label class="form-label">Tháng <span class="text-danger">*</span></label><input asp-for="Salary.Month" class="form-control" type="number" required /></div><div class="col-md-3"><label class="form-label">Năm <span class="text-danger">*</span></label><input asp-for="Salary.Year" class="form-control" type="number" required /></div></div>
+<div class="row g-3 mt-1"><div class="col-md-3"><label class="form-label">Lương cơ bản <span class="text-danger">*</span></label><input asp-for="Salary.BaseSalary" class="form-control" type="number" required /></div><div class="col-md-3"><label class="form-label">Phụ cấp</label><input asp-for="Salary.Allowance" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Thưởng</label><input asp-for="Salary.Bonus" class="form-control" type="number" /></div><div class="col-md-3"><label class="form-label">Khấu trừ</label><input asp-for="Salary.Deduction" class="form-control" type="number" /></div></div>
+<button class="btn btn-primary mt-3">Cập nhật</button> <a asp-page-handler="ExportPdf" asp-route-id="@Model.Salary.Id" class="btn btn-outline-danger mt-3">Xuất PDF</a> <a asp-page="Index" class="btn btn-link">Hủy</a>
 </form></div></div>

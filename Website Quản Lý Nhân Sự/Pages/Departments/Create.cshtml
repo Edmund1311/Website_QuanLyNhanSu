@@ -3,7 +3,22 @@
 @{ ViewData["Title"] = "Thêm phòng ban"; }
 <div class="page-header"><h1 class="h3">Thêm phòng ban</h1></div>
 <div class="card form-card"><div class="card-body p-4"><form method="post">
-<div class="mb-3"><label class="form-label">Tên phòng ban</label><input asp-for="Department.Name" class="form-control" /></div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                @foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+<div class="mb-3"><label class="form-label">Tên phòng ban <span class="text-danger">*</span></label><input asp-for="Department.Name" class="form-control" required /></div>
 <div class="mb-3"><label class="form-label">Mô tả</label><textarea asp-for="Department.Description" class="form-control"></textarea></div>
 <button class="btn btn-primary">Lưu</button> <a asp-page="Index" class="btn btn-link">Hủy</a>
 </form></div></div>

@@ -55,10 +55,20 @@ public class CreateModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        Attendance.CheckIn = CheckInTime; Attendance.CheckOut = CheckOutTime;
-        await _attendanceService.CreateAsync(Attendance, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Thêm chấm công thành công.";
-        return RedirectToPage("Index");
+        try
+        {
+            Attendance.CheckIn = CheckInTime;
+            Attendance.CheckOut = CheckOutTime;
+            await _attendanceService.CreateAsync(Attendance, CurrentUser.CompanyId.Value);
+            TempData["Message"] = "Thêm chấm công thành công.";
+            return RedirectToPage("Index");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            Employees = await _employeeService.GetAllAsync(CurrentUser.CompanyId.Value);
+            return Page();
+        }
     }
 }
 
@@ -85,9 +95,19 @@ public class EditModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        Attendance.CheckIn = CheckInTime; Attendance.CheckOut = CheckOutTime;
-        await _attendanceService.UpdateAsync(Attendance, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Cập nhật chấm công thành công.";
-        return RedirectToPage("Index");
+        try
+        {
+            Attendance.CheckIn = CheckInTime;
+            Attendance.CheckOut = CheckOutTime;
+            await _attendanceService.UpdateAsync(Attendance, CurrentUser.CompanyId.Value);
+            TempData["Message"] = "Cập nhật chấm công thành công.";
+            return RedirectToPage("Index");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            Employees = await _employeeService.GetAllAsync(CurrentUser.CompanyId.Value);
+            return Page();
+        }
     }
 }

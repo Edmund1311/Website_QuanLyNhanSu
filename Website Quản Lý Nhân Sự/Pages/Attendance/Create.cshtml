@@ -1,10 +1,26 @@
 @page
 @model Website_Quản_Lý_Nhân_Sự.Pages.Attendance.CreateModel
 @{ ViewData["Title"] = "Thêm chấm công"; }
+<div class="page-header"><h1 class="h3">Thêm chấm công</h1></div>
 <div class="card form-card"><div class="card-body p-4"><form method="post">
-<div class="mb-3"><label class="form-label">Nhân viên</label><select asp-for="Attendance.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))"></select></div>
-<div class="mb-3"><label class="form-label">Ngày</label><input asp-for="Attendance.WorkDate" class="form-control" type="date" /></div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                @foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+<div class="mb-3"><label class="form-label">Nhân viên <span class="text-danger">*</span></label><select asp-for="Attendance.EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))" required></select></div>
+<div class="mb-3"><label class="form-label">Ngày <span class="text-danger">*</span></label><input asp-for="Attendance.WorkDate" class="form-control" type="date" required /></div>
 <div class="mb-3"><label class="form-label">Giờ vào</label><input asp-for="CheckInTime" class="form-control" type="time" /></div>
 <div class="mb-3"><label class="form-label">Giờ ra</label><input asp-for="CheckOutTime" class="form-control" type="time" /></div>
 <div class="mb-3"><label class="form-label">Trạng thái</label><select asp-for="Attendance.Status" class="form-select" asp-items="Html.GetEnumSelectList<AttendanceStatus>()"></select></div>
-<button class="btn btn-primary">Lưu</button></form></div></div>
+<button class="btn btn-primary">Lưu</button> <a asp-page="Index" class="btn btn-link">Hủy</a></form></div></div>

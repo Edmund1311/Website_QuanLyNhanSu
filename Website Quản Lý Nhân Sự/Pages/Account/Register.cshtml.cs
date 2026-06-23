@@ -49,6 +49,14 @@ public class RegisterModel : PageModel
             return Page();
         }
 
+        // Kiểm tra email đã tồn tại chưa
+        var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+        if (existingUser is not null)
+        {
+            ModelState.AddModelError(string.Empty, "Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập nếu bạn đã có tài khoản.");
+            return Page();
+        }
+
         var user = new ApplicationUser
         {
             UserName = Input.Email,

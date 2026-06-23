@@ -41,9 +41,18 @@ public class CreateModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        await _contractService.CreateAsync(Contract, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Thêm hợp đồng thành công.";
-        return RedirectToPage("Index");
+        try
+        {
+            await _contractService.CreateAsync(Contract, CurrentUser.CompanyId.Value);
+            TempData["Message"] = "Thêm hợp đồng thành công.";
+            return RedirectToPage("Index");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            Employees = await _employeeService.GetAllAsync(CurrentUser.CompanyId.Value);
+            return Page();
+        }
     }
 }
 
@@ -68,9 +77,18 @@ public class EditModel : SecurePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         if (CurrentUser.CompanyId is null) return RedirectToPage("/Dashboard/Index");
-        await _contractService.UpdateAsync(Contract, CurrentUser.CompanyId.Value);
-        TempData["Message"] = "Cập nhật hợp đồng thành công.";
-        return RedirectToPage("Index");
+        try
+        {
+            await _contractService.UpdateAsync(Contract, CurrentUser.CompanyId.Value);
+            TempData["Message"] = "Cập nhật hợp đồng thành công.";
+            return RedirectToPage("Index");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            Employees = await _employeeService.GetAllAsync(CurrentUser.CompanyId.Value);
+            return Page();
+        }
     }
     public async Task<IActionResult> OnGetExportPdfAsync(int id)
     {

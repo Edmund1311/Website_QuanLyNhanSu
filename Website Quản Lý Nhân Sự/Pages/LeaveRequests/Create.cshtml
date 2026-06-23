@@ -1,9 +1,25 @@
 @page
 @model Website_Quản_Lý_Nhân_Sự.Pages.LeaveRequests.CreateModel
 @{ ViewData["Title"] = "Tạo đơn nghỉ phép"; }
+<div class="page-header"><h1 class="h3">Tạo đơn nghỉ phép</h1></div>
 <div class="card form-card"><div class="card-body p-4"><form method="post">
-<div class="mb-3"><label class="form-label">Từ ngày</label><input asp-for="LeaveRequest.StartDate" class="form-control" type="date" /></div>
-<div class="mb-3"><label class="form-label">Đến ngày</label><input asp-for="LeaveRequest.EndDate" class="form-control" type="date" /></div>
-<div class="mb-3"><label class="form-label">Loại nghỉ</label><input asp-for="LeaveRequest.LeaveType" class="form-control" /></div>
-<div class="mb-3"><label class="form-label">Lý do</label><textarea asp-for="LeaveRequest.Reason" class="form-control"></textarea></div>
-<button class="btn btn-primary">Gửi đơn</button></form></div></div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Vui lòng kiểm tra các lỗi dưới đây:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                @foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+<div class="mb-3"><label class="form-label">Từ ngày <span class="text-danger">*</span></label><input asp-for="LeaveRequest.StartDate" class="form-control" type="date" required /></div>
+<div class="mb-3"><label class="form-label">Đến ngày <span class="text-danger">*</span></label><input asp-for="LeaveRequest.EndDate" class="form-control" type="date" required /></div>
+<div class="mb-3"><label class="form-label">Loại nghỉ <span class="text-danger">*</span></label><input asp-for="LeaveRequest.LeaveType" class="form-control" required /></div>
+<div class="mb-3"><label class="form-label">Lý do <span class="text-danger">*</span></label><textarea asp-for="LeaveRequest.Reason" class="form-control" required></textarea></div>
+<button class="btn btn-primary">Gửi đơn</button> <a asp-page="Index" class="btn btn-link">Hủy</a></form></div></div>

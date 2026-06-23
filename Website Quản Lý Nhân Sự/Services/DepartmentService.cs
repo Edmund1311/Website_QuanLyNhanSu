@@ -111,13 +111,7 @@ public class DepartmentService : IDepartmentService
             return (false, "Không tìm thấy phòng ban");
         }
 
-        // Check if department has employees
-        var hasEmployees = await _context.Employees.AnyAsync(e => e.DepartmentId == id);
-        if (hasEmployees)
-        {
-            return (false, "Không thể xóa phòng ban đang có nhân viên");
-        }
-
+        // Soft delete phòng ban (không xóa nhân viên, chỉ xóa mềm phòng ban)
         department.IsDeleted = true;
         await _context.SaveChangesAsync();
         return (true, "Xóa phòng ban thành công");
@@ -242,13 +236,7 @@ public class PositionService : IPositionService
             return (false, "Không tìm thấy chức vụ");
         }
 
-        // Check if position has employees
-        var hasEmployees = await _context.Employees.AnyAsync(e => e.PositionId == id);
-        if (hasEmployees)
-        {
-            return (false, "Không thể xóa chức vụ đang có nhân viên");
-        }
-
+        // Soft delete chức vụ (không xóa nhân viên, chỉ xóa mềm chức vụ)
         position.IsDeleted = true;
         await _context.SaveChangesAsync();
         return (true, "Xóa chức vụ thành công");
